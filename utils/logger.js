@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const LOG_FILE = path.join(process.cwd(), 'logs.txt');
+const LOG_FILE = path.join(process.cwd(), 'logs', 'logs.txt');
 
 export function logEvent({
   automation,
