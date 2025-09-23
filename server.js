@@ -1,6 +1,7 @@
 // server.js
 import express from 'express';
 import { getQueue } from './utils/queues.js';
+import { logEvent } from './utils/logger.js';
 
 const app = express();
 app.use(express.json());
@@ -18,11 +19,40 @@ app.post('/run', async (req, res) => {
     const queue = getQueue(scriptName);
 
     queue.enqueue(async () => {
+      const startTime = Date.now();
+      logEvent({
+        automation: scriptName,
+        action: 'start',
+        status: 'in-progress',
+        startTime,
+        metadata: { input: req.body.input }
+      });
+
       try {
         const result = await runScript(req.body.input || {});
+
+        logEvent({
+          automation: scriptName,
+          action: 'run',
+          status: 'success',
+          startTime,
+          endTime: Date.now(),
+          metadata: { result }
+        });
+
         res.json({ success: true, result });
       } catch (err) {
         console.error(err);
+
+        logEvent({
+          automation: scriptName,
+          action: 'run',
+          status: 'failure',
+          startTime,
+          endTime: Date.now(),
+          metadata: { error: err.message }
+        });
+
         res.status(500).json({ error: err.message });
       }
     });
