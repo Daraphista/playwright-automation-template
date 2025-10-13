@@ -1,23 +1,63 @@
-// scripts/example.js
 import { chromium } from 'playwright';
 import { humanPause } from '../utils/humanPause.js';
+import { logEvent } from '../utils/logger.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const scriptName = path.basename(__filename, '.js');
+
+const exampleScript
+
+async function exampleScript(ylopoLeadUrl, address) {
+  const browser = await chromium.launch({ headless: true });
+  // const sessionFile = path.resolve(__dirname, '../cookies/platform-session.json');
+  // const context = await browser.newContext({ storageState: sessionFile });
+  const page = await context.newPage();
+  page.setDefaultTimeout(60000);
+
+  try {
+    await page.goto(ylopoLeadUrl, { waitUntil: 'domcontentloaded' });
+    
+    // If you're redirected to login, session expired — handle below
+    if (page.url().includes('/auth')) {
+      const startTime = Date.now();
+      logEvent({
+        automation: scriptName,
+        action: 'start',
+        status: 'error-progress',
+        startTime,
+        metadata: { input: req.body.input, error: 'Session not valid / expired. Re-save storageState by logging in manually.' }
+      });
+      await browser.close();
+      process.exit(1);
+    }
+
+      await context.close();
+      await browser.close();
+  
+      return { };
+    } catch (err) {
+      await browser.close();
+      throw err;
+    }
+  }
+}
 
 export default async function run(input = {}) {
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
-  const page = await context.newPage();
 
-  const url = input.url || 'https://example.com';
-  console.log(`🌐 Starting Job: ${url}`);
-  await page.goto(url);
+  // get inputs
+  // const ylopoLeadUrl = input.ylopoLeadUrl
+  // const address = input.address
+  // const followupbossContactUrl = input.followupbossContactUrl
+  // const FUBtag = input.FUBtag || "Seller Report Callaction"
 
-  await humanPause(page, 2000, 5000);
-  
-  const title = await page.title();
-  console.log(`📄 Finished Job: ${title}`);
+  // run scripts
+  // const result = await getYlopoSellerReport(ylopoLeadUrl, address);
+  // const followupboss = await sendTextInFollowUpBoss(followupbossContactUrl, result.reportUrl, FUBtag);
 
-  await context.close();
-  await browser.close();
-
-  return { ok: true, title };
+  // return results
+  // return { ok: true, result: result.reportUrl };
 }
