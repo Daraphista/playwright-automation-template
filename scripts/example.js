@@ -35,14 +35,13 @@ async function exampleScript(ylopoLeadUrl, address) {
       process.exit(1);
     }
 
-      await context.close();
-      await browser.close();
-  
-      return { };
-    } catch (err) {
-      await browser.close();
-      throw err;
-    }
+    await context.close();
+    await browser.close();
+
+    return { };
+  } catch (err) {
+    await browser.close();
+    throw err;
   }
 }
 
