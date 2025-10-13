@@ -9,8 +9,6 @@ const __dirname = path.dirname(__filename);
 
 const scriptName = path.basename(__filename, '.js');
 
-const exampleScript
-
 async function exampleScript(ylopoLeadUrl, address) {
   const browser = await chromium.launch({ headless: true });
   // const sessionFile = path.resolve(__dirname, '../cookies/platform-session.json');
